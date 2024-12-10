@@ -7,6 +7,7 @@ import "./../app/app.css";
 import { Amplify } from "aws-amplify";
 import outputs from "@/amplify_outputs.json";
 import "@aws-amplify/ui-react/styles.css";
+import { uploadData } from "aws-amplify/storage";
 
 import { useAuthenticator } from "@aws-amplify/ui-react";
 
@@ -15,6 +16,27 @@ Amplify.configure(outputs);
 const client = generateClient<Schema>();
 
 export default function App() {
+
+const [file, setFile] = useState<File | undefined>();
+const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      setFile(files[0]);
+    }
+  };
+
+  const handleUpload = () => {
+    if (file) { // file が undefined でないことを確認
+      uploadData({
+        path: `picture-submissions/${file.name}`,
+        data: file,
+      })
+      alert(`${file.name}がアップロードされました。`)
+  } else{
+    alert(`ファイルが選択されていません。`)
+  }; 
+};
+
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
 
   function listTodos() {
@@ -60,6 +82,14 @@ export default function App() {
         </a>
       </div>
             <button onClick={signOut}>Sign out</button>
+                <div>
+      <input type="file" onChange={handleChange} />
+        <button
+          onClick={handleUpload}>
+        Upload
+      </button>
+    </div>
+
     </main>
   );
 }

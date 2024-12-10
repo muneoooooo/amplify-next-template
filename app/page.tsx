@@ -8,8 +8,10 @@ import { Amplify } from "aws-amplify";
 import outputs from "@/amplify_outputs.json";
 import "@aws-amplify/ui-react/styles.css";
 import { uploadData } from "aws-amplify/storage";
+import { list } from 'aws-amplify/storage';
 
 import { useAuthenticator } from "@aws-amplify/ui-react";
+
 
 Amplify.configure(outputs);
 
@@ -18,6 +20,17 @@ const client = generateClient<Schema>();
 export default function App() {
 
 const [file, setFile] = useState<File | undefined>();
+
+  const fetchFiles = async () => {
+    const result = await list({
+      path: 'picture-submissions/',
+      options: {
+        listAll: true,
+      }
+    });
+    console.log("result:" + result);
+  }
+
 const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
@@ -54,6 +67,7 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 
   useEffect(() => {
     listTodos();
+    fetchFiles();
   }, []);
 
   function createTodo() {
